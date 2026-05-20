@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,31 +19,37 @@ public class AsistenciaController {
 
     private final AsistenciaService asistenciaService;
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'ENTRENADOR')")
     @PostMapping
     public ResponseEntity<AsistenciaResponseDTO> crear(@Valid @RequestBody AsistenciaRequestDTO requestDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(asistenciaService.crear(requestDTO));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'ENTRENADOR')")
     @GetMapping
     public ResponseEntity<List<AsistenciaResponseDTO>> obtenerTodas() {
         return ResponseEntity.ok(asistenciaService.obtenerTodas());
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'ENTRENADOR', 'CLIENTE')")
     @GetMapping("/{id}")
     public ResponseEntity<AsistenciaResponseDTO> obtenerPorId(@PathVariable Long id) {
         return ResponseEntity.ok(asistenciaService.obtenerPorId(id));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'ENTRENADOR', 'CLIENTE')")
     @GetMapping("/cliente/{clienteId}")
     public ResponseEntity<List<AsistenciaResponseDTO>> obtenerPorCliente(@PathVariable Long clienteId) {
         return ResponseEntity.ok(asistenciaService.obtenerPorCliente(clienteId));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'ENTRENADOR')")
     @GetMapping("/horario/{horarioId}")
     public ResponseEntity<List<AsistenciaResponseDTO>> obtenerPorHorario(@PathVariable Long horarioId) {
         return ResponseEntity.ok(asistenciaService.obtenerPorHorario(horarioId));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         asistenciaService.eliminar(id);
