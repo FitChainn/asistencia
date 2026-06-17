@@ -1,10 +1,14 @@
 package com.fitchain.asistencia.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor // por si acaso
 public class ClienteDTO {
     private Long id;
     private String nombre;
