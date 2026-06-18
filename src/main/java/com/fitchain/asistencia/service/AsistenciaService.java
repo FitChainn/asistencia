@@ -34,7 +34,7 @@ public class AsistenciaService {
     }
 
     public AsistenciaResponseDTO crear(AsistenciaRequestDTO requestDTO) {
-        log.info("Registrando asistencia para clienteId {}", requestDTO.getClienteId());
+        log.info("REGISTRANDO ASISTENCIA PARA clienteId={}", requestDTO.getClienteId());
 
         ClienteDTO cliente = clienteClient.obtenerClientePorId(requestDTO.getClienteId());
         HorarioDTO horario = horarioClient.obtenerHorarioPorId(requestDTO.getHorarioId());
@@ -45,12 +45,12 @@ public class AsistenciaService {
         asistencia.setFecha(requestDTO.getFecha());
 
         Asistencia guardada = asistenciaRepository.save(asistencia);
-        log.info("Asistencia registrada con id {}", guardada.getId());
+        log.info("ASISTENCIA REGISTRADA CON ID: {}", guardada.getId());
         return toResponseDTO(guardada, cliente, horario);
     }
 
     public List<AsistenciaResponseDTO> obtenerTodas() {
-        log.info("Obteniendo todas las asistencias");
+        log.info("OBTENIENDO TODAS LAS ASISTENCIAS");
         return asistenciaRepository.findAll().stream()
                 .map(a -> toResponseDTO(a,
                         clienteClient.obtenerClientePorId(a.getClienteId()),
@@ -59,7 +59,7 @@ public class AsistenciaService {
     }
 
     public AsistenciaResponseDTO obtenerPorId(Long id) {
-        log.info("Buscando asistencia con id {}", id);
+        log.info("BUSCANDO ASISTENCIA CON ID: {}", id);
         Asistencia asistencia = asistenciaRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Asistencia con id " + id + " no encontrada"));
         return toResponseDTO(asistencia,
@@ -68,7 +68,7 @@ public class AsistenciaService {
     }
 
     public List<AsistenciaResponseDTO> obtenerPorCliente(Long clienteId) {
-        log.info("Buscando asistencias del cliente {}", clienteId);
+        log.info("BUSCANDO ASISTENCIAS DEL CLIENTE {}", clienteId);
         ClienteDTO cliente = clienteClient.obtenerClientePorId(clienteId);
         return asistenciaRepository.findByClienteId(clienteId).stream()
                 .map(a -> toResponseDTO(a, cliente, horarioClient.obtenerHorarioPorId(a.getHorarioId())))
@@ -76,7 +76,7 @@ public class AsistenciaService {
     }
 
     public List<AsistenciaResponseDTO> obtenerPorHorario(Long horarioId) {
-        log.info("Buscando asistencias del horario {}", horarioId);
+        log.info("BUSCANDO ASISTENCIAS DEL HORARIO {}", horarioId);
         HorarioDTO horario = horarioClient.obtenerHorarioPorId(horarioId);
         return asistenciaRepository.findByHorarioId(horarioId).stream()
                 .map(a -> toResponseDTO(a, clienteClient.obtenerClientePorId(a.getClienteId()), horario))
@@ -84,11 +84,11 @@ public class AsistenciaService {
     }
 
     public void eliminar(Long id) {
-        log.info("Eliminando asistencia con id {}", id);
+        log.info("ELIMINANDO ASISTENCIA CON ID: {}", id);
         if (!asistenciaRepository.existsById(id)) {
             throw new NoSuchElementException("Asistencia con id " + id + " no encontrada");
         }
         asistenciaRepository.deleteById(id);
-        log.info("Asistencia {} eliminada", id);
+        log.info("ASISTENCIA CON ID {} ELIMINADA EXITOSAMENTE", id);
     }
 }
