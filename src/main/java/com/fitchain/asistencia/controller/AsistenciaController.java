@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @Tag(name = "ASISTENCIAS", description = "GESTIÓN DE ASISTENCIAS")
 @RestController
 @RequestMapping("/v1/asistencias")
@@ -34,6 +36,7 @@ public class AsistenciaController {
     @PreAuthorize("hasAnyRole('ADMIN', 'ENTRENADOR')")
     @PostMapping
     public ResponseEntity<AsistenciaResponseDTO> crear(@Valid @RequestBody AsistenciaRequestDTO requestDTO) {
+        log.info("POST /v1/asistencias - REGISTRAR ASISTENCIA clienteId={}", requestDTO.getClienteId());
         return ResponseEntity.status(HttpStatus.CREATED).body(asistenciaService.crear(requestDTO));
     }
 
@@ -45,6 +48,7 @@ public class AsistenciaController {
     @PreAuthorize("hasAnyRole('ADMIN', 'ENTRENADOR')")
     @GetMapping
     public ResponseEntity<List<AsistenciaResponseDTO>> obtenerTodas() {
+        log.info("GET /v1/asistencias - LISTAR TODAS");
         return ResponseEntity.ok(asistenciaService.obtenerTodas());
     }
 
@@ -56,6 +60,7 @@ public class AsistenciaController {
     @PreAuthorize("hasAnyRole('ADMIN', 'ENTRENADOR', 'CLIENTE')")
     @GetMapping("/{id}")
     public ResponseEntity<AsistenciaResponseDTO> obtenerPorId(@PathVariable Long id) {
+        log.info("GET /v1/asistencias/{} - BUSCAR POR ID", id);
         return ResponseEntity.ok(asistenciaService.obtenerPorId(id));
     }
 
@@ -67,6 +72,7 @@ public class AsistenciaController {
     @PreAuthorize("hasAnyRole('ADMIN', 'ENTRENADOR', 'CLIENTE')")
     @GetMapping("/cliente/{clienteId}")
     public ResponseEntity<List<AsistenciaResponseDTO>> obtenerPorCliente(@PathVariable Long clienteId) {
+        log.info("GET /v1/asistencias/cliente/{} - BUSCAR POR CLIENTE", clienteId);
         return ResponseEntity.ok(asistenciaService.obtenerPorCliente(clienteId));
     }
 
@@ -78,6 +84,7 @@ public class AsistenciaController {
     @PreAuthorize("hasAnyRole('ADMIN', 'ENTRENADOR')")
     @GetMapping("/horario/{horarioId}")
     public ResponseEntity<List<AsistenciaResponseDTO>> obtenerPorHorario(@PathVariable Long horarioId) {
+        log.info("GET /v1/asistencias/horario/{} - BUSCAR POR HORARIO", horarioId);
         return ResponseEntity.ok(asistenciaService.obtenerPorHorario(horarioId));
     }
 
@@ -89,6 +96,7 @@ public class AsistenciaController {
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+        log.info("DELETE /v1/asistencias/{} - ELIMINAR ASISTENCIA", id);
         asistenciaService.eliminar(id);
         return ResponseEntity.noContent().build();
     }
