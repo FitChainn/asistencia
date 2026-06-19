@@ -1,5 +1,6 @@
 package com.fitchain.asistencia.controller;
 
+import com.fitchain.asistencia.assembler.AsistenciaModelAssembler;
 import com.fitchain.asistencia.dto.AsistenciaRequestDTO;
 import com.fitchain.asistencia.dto.AsistenciaResponseDTO;
 import com.fitchain.asistencia.service.AsistenciaService;
@@ -10,12 +11,17 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Slf4j
 @Tag(name = "ASISTENCIAS", description = "GESTIÓN DE ASISTENCIAS")
@@ -25,6 +31,7 @@ import java.util.List;
 public class AsistenciaController {
 
     private final AsistenciaService asistenciaService;
+    private final AsistenciaModelAssembler assembler;
 
     @Operation(summary = "CREAR ASISTENCIA", description = "Registra una nueva asistencia. Acceso: ADMIN, ENTRENADOR")
     @ApiResponses({
@@ -35,9 +42,10 @@ public class AsistenciaController {
     })
     @PreAuthorize("hasAnyRole('ADMIN', 'ENTRENADOR')")
     @PostMapping
-    public ResponseEntity<AsistenciaResponseDTO> crear(@Valid @RequestBody AsistenciaRequestDTO requestDTO) {
+    public ResponseEntity<EntityModel<AsistenciaResponseDTO>> crear(@Valid @RequestBody AsistenciaRequestDTO requestDTO) {
         log.info("POST /v1/asistencias - REGISTRAR ASISTENCIA clienteId={}", requestDTO.getClienteId());
-        return ResponseEntity.status(HttpStatus.CREATED).body(asistenciaService.crear(requestDTO));
+        AsistenciaResponseDTO creada = asistenciaService.crear(requestDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(assembler.toModel(creada));
     }
 
     @Operation(summary = "OBTENER TODAS LAS ASISTENCIAS", description = "Retorna la lista de todas las asistencias. Acceso: ADMIN, ENTRENADOR")
@@ -47,9 +55,13 @@ public class AsistenciaController {
     })
     @PreAuthorize("hasAnyRole('ADMIN', 'ENTRENADOR')")
     @GetMapping
-    public ResponseEntity<List<AsistenciaResponseDTO>> obtenerTodas() {
+    public ResponseEntity<CollectionModel<EntityModel<AsistenciaResponseDTO>>> obtenerTodas() {
         log.info("GET /v1/asistencias - LISTAR TODAS");
-        return ResponseEntity.ok(asistenciaService.obtenerTodas());
+        List<EntityModel<AsistenciaResponseDTO>> asistencias = asistenciaService.obtenerTodas().stream()
+                .map(assembler::toModel)
+                .toList();
+        return ResponseEntity.ok(CollectionModel.of(asistencias,
+                linkTo(methodOn(AsistenciaController.class).obtenerTodas()).withSelfRel()));
     }
 
     @Operation(summary = "OBTENER ASISTENCIA POR ID", description = "Retorna una asistencia específica por su ID. Acceso: ADMIN, ENTRENADOR, CLIENTE")
@@ -59,9 +71,9 @@ public class AsistenciaController {
     })
     @PreAuthorize("hasAnyRole('ADMIN', 'ENTRENADOR', 'CLIENTE')")
     @GetMapping("/{id}")
-    public ResponseEntity<AsistenciaResponseDTO> obtenerPorId(@PathVariable Long id) {
+    public ResponseEntity<EntityModel<AsistenciaResponseDTO>> obtenerPorId(@PathVariable Long id) {
         log.info("GET /v1/asistencias/{} - BUSCAR POR ID", id);
-        return ResponseEntity.ok(asistenciaService.obtenerPorId(id));
+        return ResponseEntity.ok(assembler.toModel(asistenciaService.obtenerPorId(id)));
     }
 
     @Operation(summary = "OBTENER ASISTENCIAS POR CLIENTE", description = "Retorna todas las asistencias de un cliente. Acceso: ADMIN, ENTRENADOR, CLIENTE")
@@ -71,9 +83,13 @@ public class AsistenciaController {
     })
     @PreAuthorize("hasAnyRole('ADMIN', 'ENTRENADOR', 'CLIENTE')")
     @GetMapping("/cliente/{clienteId}")
-    public ResponseEntity<List<AsistenciaResponseDTO>> obtenerPorCliente(@PathVariable Long clienteId) {
+    public ResponseEntity<CollectionModel<EntityModel<AsistenciaResponseDTO>>> obtenerPorCliente(@PathVariable Long clienteId) {
         log.info("GET /v1/asistencias/cliente/{} - BUSCAR POR CLIENTE", clienteId);
-        return ResponseEntity.ok(asistenciaService.obtenerPorCliente(clienteId));
+        List<EntityModel<AsistenciaResponseDTO>> asistencias = asistenciaService.obtenerPorCliente(clienteId).stream()
+                .map(assembler::toModel)
+                .toList();
+        return ResponseEntity.ok(CollectionModel.of(asistencias,
+                linkTo(methodOn(AsistenciaController.class).obtenerPorCliente(clienteId)).withSelfRel()));
     }
 
     @Operation(summary = "OBTENER ASISTENCIAS POR HORARIO", description = "Retorna todas las asistencias de un horario. Acceso: ADMIN, ENTRENADOR")
@@ -83,9 +99,13 @@ public class AsistenciaController {
     })
     @PreAuthorize("hasAnyRole('ADMIN', 'ENTRENADOR')")
     @GetMapping("/horario/{horarioId}")
-    public ResponseEntity<List<AsistenciaResponseDTO>> obtenerPorHorario(@PathVariable Long horarioId) {
+    public ResponseEntity<CollectionModel<EntityModel<AsistenciaResponseDTO>>> obtenerPorHorario(@PathVariable Long horarioId) {
         log.info("GET /v1/asistencias/horario/{} - BUSCAR POR HORARIO", horarioId);
-        return ResponseEntity.ok(asistenciaService.obtenerPorHorario(horarioId));
+        List<EntityModel<AsistenciaResponseDTO>> asistencias = asistenciaService.obtenerPorHorario(horarioId).stream()
+                .map(assembler::toModel)
+                .toList();
+        return ResponseEntity.ok(CollectionModel.of(asistencias,
+                linkTo(methodOn(AsistenciaController.class).obtenerPorHorario(horarioId)).withSelfRel()));
     }
 
     @Operation(summary = "ELIMINAR ASISTENCIA", description = "Elimina una asistencia por su ID. Acceso: ADMIN")
