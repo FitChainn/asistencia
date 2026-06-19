@@ -1,5 +1,6 @@
 package com.fitchain.asistencia;
 
+import com.fitchain.asistencia.assembler.AsistenciaModelAssembler;
 import com.fitchain.asistencia.config.SecurityConfig;
 import com.fitchain.asistencia.controller.AsistenciaController;
 import com.fitchain.asistencia.dto.AsistenciaRequestDTO;
@@ -31,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(AsistenciaController.class)
-@Import({SecurityConfig.class, RolHeaderFilter.class})
+@Import({SecurityConfig.class, RolHeaderFilter.class, AsistenciaModelAssembler.class})
 @WithMockUser
 public class AsistenciaControllerTest {
 
@@ -89,7 +90,7 @@ public class AsistenciaControllerTest {
         mockMvc.perform(get("/v1/asistencias")
                         .header("X-User-Rol", "ADMIN"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1));
+                .andExpect(jsonPath("$._embedded.asistenciaResponseDTOList.length()").value(1));
     }
 
     @Test
