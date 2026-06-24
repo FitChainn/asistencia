@@ -58,7 +58,7 @@ public class AsistenciaServiceTest {
 
         horarioDTO = new HorarioDTO();
         horarioDTO.setId(1L);
-        horarioDTO.setHoraIniTurno(LocalTime.of(9, 0));
+        horarioDTO.setHoraApertura(LocalTime.of(9, 0));
 
         aRequest = new AsistenciaRequestDTO();
         aRequest.setClienteId(1L);

@@ -115,9 +115,10 @@ public class AsistenciaController {
     })
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+    public ResponseEntity<EntityModel<AsistenciaResponseDTO>> eliminar(@PathVariable Long id) {
         log.info("DELETE /v1/asistencias/{} - ELIMINAR ASISTENCIA", id);
+        AsistenciaResponseDTO asistencia = asistenciaService.obtenerPorId(id);
         asistenciaService.eliminar(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(assembler.toModel(asistencia));
     }
 }

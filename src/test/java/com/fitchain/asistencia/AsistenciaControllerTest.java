@@ -56,7 +56,7 @@ public class AsistenciaControllerTest {
 
         HorarioDTO hor = new HorarioDTO();
         hor.setId(1L);
-        hor.setHoraIniTurno(LocalTime.of(9, 0));
+        hor.setHoraApertura(LocalTime.of(9, 0));
 
         aResponse = new AsistenciaResponseDTO();
         aResponse.setId(1L);

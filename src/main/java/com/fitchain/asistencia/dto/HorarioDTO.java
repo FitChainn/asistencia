@@ -11,6 +11,6 @@ import java.time.LocalTime;
 @AllArgsConstructor
 public class HorarioDTO {
     private Long id;
-    private LocalTime horaIniTurno;
-    private LocalTime horaFinTurno;
+    private LocalTime horaApertura;
+    private LocalTime horaCierre;
 }
